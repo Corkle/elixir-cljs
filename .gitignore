@@ -15,5 +15,5 @@ erl_crash.dump
 # variables.
 /config/prod.secret.exs
 
-# boot compiied assets
-/priv/static
+# boot compiled assets
+/priv/static/

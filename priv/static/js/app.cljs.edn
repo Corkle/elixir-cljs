@@ -1,2 +1,0 @@
-{:require [elixir-cljs.core]
- :compiler-options {:asset-path "js/app.out"}}

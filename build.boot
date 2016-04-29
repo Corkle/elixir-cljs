@@ -23,3 +23,10 @@
     ; (reload)
     (cljs :source-map true)
     (target :dir #{"priv/static"})))
+    
+(deftask prod-cljs
+  "Compile production files using advanced mode"
+  []
+  (comp
+    (cljs :optimizations :advanced)
+    (target :dir #{"priv/static"})))
