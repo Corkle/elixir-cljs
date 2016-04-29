@@ -9,6 +9,8 @@
     [reagent                    "0.6.0-alpha"    :scope "provided"]
     [re-frame                   "0.7.0"          :scope "provided"]
     [com.cognitect/transit-cljs "0.8.237"        :scope "provided"]
+    [cljs-ajax                  "0.5.4"          :scope "provided"]
+    [com.taoensso/sente         "1.8.1"          :scope "provided"]
     ])
 
 (require

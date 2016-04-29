@@ -33,6 +33,9 @@ defmodule ElixirCljs.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.9"},
      {:cowboy, "~> 1.0"},
-     {:rethinkdb, "~> 0.4.0"}]
+     {:rethinkdb, "~> 0.4.0"},
+     {:poison, "~> 1.5"},
+     {:comeonin, "~> 2.4"},
+     {:guardian, "~> 0.10.0"}]
   end
 end

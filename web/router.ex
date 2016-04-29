@@ -16,7 +16,15 @@ defmodule ElixirCljs.Router do
   scope "/", ElixirCljs do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
+    get "*path", PageController, :index
+  end
+  
+  scope "/api", ElixirCljs do
+    pipe_through :api
+    
+    scope "/v1" do
+      post "/registrations", RegistrationController, :create
+    end
   end
 
   # Other scopes may use custom stacks.

@@ -1,18 +1,22 @@
 (ns elixir-cljs.core
-  (:require [reagent.core :as r]
-            [re-frame.core :refer [register-handler register-sub dispatch dispatch-sync subscribe]]
-            [cognitect.transit :as transit])
+  (:require 
+    [ajax.core :refer [GET POST]]
+    [reagent.core :as r]
+    [re-frame.core :refer [register-handler register-sub dispatch dispatch-sync subscribe]]
+    ; [elixir-cljs.ws :refer [start-router!]]
+            )
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (enable-console-print!)
 
-(defn deserialize
-  [x]
-  (transit/read (transit/reader :json) x))
+(def test-user {:username "test_user"
+                :name "Tim Jones"})
 
-(defn serialize
-  [x]
-  (transit/write (transit/writer :json) x))
+(defn error-handler [{:keys [status status-text]}]
+  (js/console.log (str "error: " status " " status-text)))
+
+(defn handler [res]
+  (js/console.log (str res)))
 
 (register-handler
   :init
@@ -30,7 +34,12 @@
   :add-user
   (fn [db [_ user]]
     (let [user (:username-value db)]
-      (js/console.log (serialize {:user user}))
+      (POST "/api/v1/registrations"
+        {:params {:user test-user}
+         :handler handler
+         :error-handler error-handler
+         :format :json
+         :response-format :json})
       db)))
 
 (register-sub
@@ -56,6 +65,8 @@
 
 (defn init []
   (dispatch-sync [:init])
-  (r/render app-main (.getElementById js/document "app")))
+  (r/render app-main (.getElementById js/document "app"))
+  ; (start-router!)
+  )
 
 (init)
