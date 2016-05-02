@@ -14,12 +14,14 @@
     (fn []
       [:input.form-control {:type "text"
                             :value @name
+                            :required true
                             :on-change #(dispatch [:set-name-input (-> % .-target .-value)])}])))
 (defn- username-input []
   (let [username (subscribe [:username-input])]
     (fn []
       [:input.form-control {:type "text"
                             :value @username
+                            :required true
                             :on-change #(dispatch [:set-username-input (-> % .-target .-value)])}])))
 
 (defn- password-input []
@@ -27,6 +29,7 @@
     (fn []
       [:input.form-control {:type "text"
                             :value @password
+                            :required true
                             :on-change #(dispatch [:set-password-input (-> % .-target .-value)])}])))
 
 (defn- password-conf-input []
@@ -34,6 +37,7 @@
     (fn []
       [:input.form-control {:type "text"
                             :value @password-conf
+                            :required true
                             :on-change #(dispatch [:set-password-conf-input (-> % .-target .-value)])}])))
 
 
@@ -45,7 +49,7 @@
                            (dispatch [:ajax/create-account]))}
        [input-group-item "Name" name-input]
        [input-group-item "Username" username-input]
-       [input-group-item "Passowrd" password-input]
+       [input-group-item "Password" password-input]
        [input-group-item "Confirm Password" password-conf-input]
        [:hr]
        [:button "Add User"]])))

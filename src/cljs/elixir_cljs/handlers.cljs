@@ -1,6 +1,7 @@
 (ns elixir-cljs.handlers
   (:require
     [ajax.core :refer [GET POST]]
+    [cognitect.transit :as t]
     [re-frame.core :refer [register-handler dispatch]]))
 
 (def test-user {:username "test_user8"
@@ -26,20 +27,25 @@
                                              :password-conf ""})))
 
 (register-handler
-  :ajax-res/response-handler
+  :ajax/registration-response-handler
   (fn [db [_ res]]
-    (js/console.log (str res))
-    db))
+    (println res)
+    (println (t/read (t/reader :json) res))
+    (assoc-in db [:authentication] :nil)))
+
+(defn- registration-response-handler
+  [res]
+  (dispatch [:ajax/registration-response-handler res]))
 
 (register-handler
-  :ajax-res/response-error-handler
+  :ajax/registration-response-error-handler
   (fn [db [_ {:keys [status status-text]}]]
     (js/console.log (str "error: " status " " status-text))
     db))
 
-(defn- res-handler
+(defn- registration-response-error-handler
   [res]
-  (dispatch [:ajax-res/response-handler res]))
+  (dispatch [:ajax/registration-response-error-handler res]))
 
 (register-handler
   :set-name-input
@@ -61,22 +67,19 @@
   (fn [db [_ password-conf]]
     (assoc-in db [:form-data :registration :password-conf] password-conf)))
 
-(defn- res-error-handler
-  [res]
-  (dispatch [:ajax-res/response-error-handler res]))
-
 (register-handler
   :ajax/create-account
   (fn [db _]
     (let [user-form (get-in db [:form-data :registration])
           user {:username (:username user-form)
                 :name (:name user-form)
-                :password (:password user-form)}]
+                :password (:password user-form)
+                :password-conf (:password-conf user-form)}]
       (POST "/api/v1/registrations"
             {:params {:user user}
-             :handler res-handler
-             :error-handler res-error-handler
+             :handler registration-response-handler
+             :error-handler registration-response-error-handler
              :format :json
              :response-format :json})
-      db)))
+      (update-in db [:form-data] dissoc :registration))))
 

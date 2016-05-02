@@ -6,6 +6,7 @@
     ; [elixir-cljs.ws :refer [start-router!]]
     [elixir-cljs.handlers]
     [elixir-cljs.subscriptions]
+    [elixir-cljs.ui.views.index :refer [index-view]]
     [elixir-cljs.ui.views.register :refer [registration-view]])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
@@ -13,7 +14,8 @@
 
 (defn- app-main []
   [:div#app
-    [registration-view]])
+;;    [index-view]
+   [registration-view]])
 
 (defn init []
   (dispatch-sync [:init-db])
