@@ -1,14 +1,14 @@
 defmodule ElixirCljs.Query do
-  
+
   alias ElixirCljs.DB
   alias RethinkDB.Query
-  
+
   def table(table) do
     Query.table(table)
     |>DB.run
     |> catch_errors
   end
-  
+
   def get(table, id) when is_bitstring(id) do
     Query.table(table)
     |> Query.get(id)
@@ -101,7 +101,11 @@ defmodule ElixirCljs.Query do
     "errors" => 0,
     "inserted" => number,
     "changes" => changes,
-    "generated_keys" => _keys
+    #"generated_keys" => _keys,
+    #"deleted" => _deleted,
+    #"replaced" => _replaced,
+    #"skipped" => _skipped,
+    #"unchanged" => _unchanged
   }) when number >= 1 do
     case number do
       1 -> {:ok, List.first(changes)["new_val"]}
