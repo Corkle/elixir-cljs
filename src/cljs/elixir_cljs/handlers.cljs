@@ -29,9 +29,7 @@
 (register-handler
   :ajax/registration-response-handler
   (fn [db [_ res]]
-    (println res)
-    (println (t/read (t/reader :json) res))
-    (assoc-in db [:authentication] :nil)))
+    (assoc-in db [:authentication] res)))
 
 (defn- registration-response-handler
   [res]
@@ -80,6 +78,7 @@
              :handler registration-response-handler
              :error-handler registration-response-error-handler
              :format :json
-             :response-format :json})
+             :response-format :json
+             :keywords? true})
       (update-in db [:form-data] dissoc :registration))))
 
