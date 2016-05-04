@@ -29,6 +29,7 @@
 (register-handler
   :ajax/registration-response-handler
   (fn [db [_ res]]
+    (js/console.log res)
     (assoc-in db [:authentication] res)))
 
 (defn- registration-response-handler
@@ -37,8 +38,9 @@
 
 (register-handler
   :ajax/registration-response-error-handler
-  (fn [db [_ {:keys [status status-text]}]]
+  (fn [db [_ {:keys [status status-text] :as res}]]
     (js/console.log (str "error: " status " " status-text))
+    (js/console.log res)
     db))
 
 (defn- registration-response-error-handler
@@ -72,7 +74,7 @@
           user {:username (:username user-form)
                 :name (:name user-form)
                 :password (:password user-form)
-                :password-conf (:password-conf user-form)}]
+                :password_confirmation (:password-conf user-form)}]
       (POST "/api/v1/registrations"
             {:params {:user user}
              :handler registration-response-handler

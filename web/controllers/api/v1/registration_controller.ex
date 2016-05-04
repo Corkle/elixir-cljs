@@ -6,24 +6,20 @@ defmodule ElixirCljs.RegistrationController do
   plug :scrub_params, "user" when action in [:create]
 
   def create(conn, %{"user" => user_params}) do
-    data = %User{
-      username: user_params["username"],
-      name: user_params["name"],
-      encrypted_password: user_params["password"]
-    }
-
-    case Query.insert("users", Map.from_struct(data)) do
+    changeset = User.changeset(%User{}, user_params)
+    
+    case Query.insert(changeset) do
       {:ok, user} ->
-        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(struct(User, user), :token)
+        {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
 
         conn
         |> put_status(:created)
         |> json(%{jwt: jwt, user: user})
 
-      {:error, error_json} ->
+      {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: true})
+        |> render(ElixirCljs.RegistrationView, "error.json", changeset: changeset)
     end
   end
 end
