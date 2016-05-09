@@ -4,9 +4,6 @@
     [cognitect.transit :as t]
     [re-frame.core :refer [register-handler dispatch]]))
 
-(def test-user {:username "test_user8"
-                :name "Tammy Janes"})
-
 (register-handler
   :init-db
   (fn [db _]
@@ -38,9 +35,9 @@
 
 (register-handler
   :ajax/registration-response-error-handler
-  (fn [db [_ {:keys [status status-text] :as res}]]
+  (fn [db [_ {:keys [status status-text response] :as res}]]
     (js/console.log (str "error: " status " " status-text))
-    (js/console.log res)
+    (js/console.log (str (:error response)))
     db))
 
 (defn- registration-response-error-handler
@@ -84,3 +81,18 @@
              :keywords? true})
       (update-in db [:form-data] dissoc :registration))))
 
+(register-handler
+  :add-test-user
+  (fn [db _]
+    (let [test-user {:username "User_Name"
+                     :name "My Real Name"
+                     :password "#12345"
+                     :password_confirmation "#12345"}]
+      (POST "/api/v1/registrations"
+            {:params {:user test-user}
+             :handler registration-response-handler
+             :error-handler registration-response-error-handler
+             :format :json
+             :response-format :json
+             :keywords? true})
+      (update-in db [:form-data] dissoc :registration))))

@@ -1,7 +1,6 @@
 defmodule ElixirCljs.Query do
 
   alias ElixirCljs.DB
-  alias RethinkDB.Record
   alias RethinkDB.Query
 
   def table(table) do
@@ -57,34 +56,31 @@ defmodule ElixirCljs.Query do
   end
 
   def do_insert(changeset) do
-    model = Ecto.Changeset.apply_changes(changeset)
-    module = model.__struct__
-    Ecto.Model.Callbacks.__apply__(module, :before_insert, changeset)
-    table = model_table(model)
-    data = model
+    struct = struct_from_changeset!(changeset)
+    schema = struct.__struct__
+    fields = schema.__schema__(:fields)
+    table = model_table(schema)
+    data = changeset
+      |> apply_changes(schema, fields)
       |> Map.from_struct
       |> Map.delete(:__meta__)
       |> Map.delete(:id)
       |> Map.put(:inserted_at, Query.now)
       |> Map.put(:updated_at, Query.now)
+      
     result = Query.table(table)
       |> Query.insert(data, %{return_changes: true})
       |> DB.run
       |> catch_errors
+      
     case result do
+      {:error, error} -> {:error, %{changeset | errors: [{:insert, error}], valid?: false}}
       %{"inserted" => 1, "changes" => changes} ->
         new_val = List.first(changes)["new_val"]
-        model = load_model(module, new_val)
+        model = load_model(schema, new_val)
         changeset = %{changeset | model: model}
-        Ecto.Model.Callbacks.__apply__(module, :after_insert, changeset)
-        {:ok, model}
-      {:error, error} -> {:error, error}
+        {:ok, changeset}      
     end
-    #uery.table(table)
-    #> Query.insert(doc, %{return_changes: true})
-    #|> DB.run
-    #|> catch_errors
-    #|> handle_insert_response
   end
 
   def update(table, id, params) do
@@ -156,6 +152,9 @@ defmodule ElixirCljs.Query do
 
   def handle_delete_response({:error, error}), do: {:error, error}
   def handle_delete_response(%{"deleted" => number, "skipped" => 0}), do: {:ok, number}
+
+  defp struct_from_changeset!(%{model: struct}),
+    do: struct
   
   defp model_table(model) do
     struct(model).__meta__.source |> elem(1)
@@ -164,8 +163,18 @@ defmodule ElixirCljs.Query do
   defp load_model(model, data) do
     Ecto.Schema.__load__(model, nil, nil, [], data, &load/2)
   end
-  
-  defp load(x, data) do
+
+  defp load(_, data) do
     {:ok, data}
+  end
+  
+  defp apply_changes(%{changes: changes}, model, fields) do
+    changes =
+      Enum.reduce fields, %{}, fn field, applied_changes ->
+        change = Map.get(changes, field)
+        Map.put(applied_changes, field, change)
+      end
+    
+    struct(model, changes) 
   end
 end

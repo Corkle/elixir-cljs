@@ -27,7 +27,7 @@
 (defn- password-input []
   (let [password (subscribe [:password-input])]
     (fn []
-      [:input.form-control {:type "text"
+      [:input.form-control {:type "password"
                             :value @password
                             :required true
                             :on-change #(dispatch [:set-password-input (-> % .-target .-value)])}])))
@@ -35,7 +35,7 @@
 (defn- password-conf-input []
   (let [password-conf (subscribe [:password-conf-input])]
     (fn []
-      [:input.form-control {:type "text"
+      [:input.form-control {:type "password"
                             :value @password-conf
                             :required true
                             :on-change #(dispatch [:set-password-conf-input (-> % .-target .-value)])}])))
@@ -54,8 +54,12 @@
        [:hr]
        [:button "Add User"]])))
 
+(defn- test-add-user []
+  [:button {:on-click #(dispatch [:add-test-user])} "Add Test"])
+
 (defn registration-view []
   (fn []
     (dispatch [:init-registration-form])
     [:div "REGISTER"
-     [add-user-form]]))
+     [add-user-form]
+     [test-add-user]]))

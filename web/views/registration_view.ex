@@ -5,11 +5,11 @@ defmodule ElixirCljs.RegistrationView do
     errors = Enum.map(changeset.errors, fn {field, detail} ->
       %{} |> Map.put(field, render_detail(detail))
     end)
-    
-      IO.inspect(errors)
+    #message = handle_error(error)
     
     %{
-      errors: errors
+      #error: message
+      error: errors
     }
   end
   
@@ -20,4 +20,12 @@ defmodule ElixirCljs.RegistrationView do
   defp render_detail(message) do
     message
   end
+  
+  defp handle_error(error) do
+    cond do
+      String.match?(error, ~r/Duplicate primary key `username`:/) -> "Username already in use."
+      true -> "Unhandled Error"
+    end
+  end
+      
 end
