@@ -7,6 +7,7 @@
 (defn root-view []
   [:div "You are at ROOT"
    [:hr]
+   [:button {:on-click #(dispatch [:nav/goto :login])} "Login"]
    [:button {:on-click #(dispatch [:nav/goto :registration])} "Register"]
    [:button {:on-click #(dispatch [:nav/goto :admin])} "Admin"]]
   )

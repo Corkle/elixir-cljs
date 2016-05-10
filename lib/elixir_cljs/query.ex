@@ -153,10 +153,10 @@ defmodule ElixirCljs.Query do
   def handle_delete_response({:error, error}), do: {:error, error}
   def handle_delete_response(%{"deleted" => number, "skipped" => 0}), do: {:ok, number}
 
-  defp transform_error({field, message} = error) do
+  defp transform_error({field, message}) do
     cond do
       String.match?(message, ~r/Duplicate primary key `username`:/) -> {:username, "Username already in use."}
-      true -> error
+      true -> {:insert, "Unhandled error"}
     end
   end
 

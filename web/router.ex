@@ -25,6 +25,7 @@ defmodule ElixirCljs.Router do
     pipe_through :api
     
     scope "/v1" do
+      get "/current_user", CurrentUserController, :show
       post "/registrations", RegistrationController, :create
       post "/sessions", SessionController, :create
       delete "/sessions", SessionController, :delete
