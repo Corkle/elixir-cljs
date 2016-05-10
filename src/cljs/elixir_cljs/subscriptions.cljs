@@ -2,28 +2,41 @@
   (:require [re-frame.core :refer [register-sub]])
   (:require-macros [reagent.ratom :refer [reaction]]))
 
+;; Navigation
+;; ===========================================================
+
+(register-sub
+  :nav/get-nav
+  (fn [db _]
+    (reaction (:nav @db))))
+
 ;; Registration Form
 ;; ===========================================================
 
 (register-sub
-  :name-input
+  :registration/name-input
   (fn [db _]
     (reaction (get-in @db [:form-data :registration :name]))))
 
 (register-sub
-  :username-input
+  :registration/username-input
   (fn [db _]
     (reaction (get-in @db [:form-data :registration :username]))))
 
 (register-sub
-  :password-input
+  :registration/password-input
   (fn [db _]
     (reaction (get-in @db [:form-data :registration :password]))))
 
 (register-sub
-  :password-conf-input
+  :registration/password-conf-input
   (fn [db _]
     (reaction (get-in @db [:form-data :registration :password-conf]))))
+
+(register-sub
+  :registration/form-errors
+  (fn [db _]
+    (reaction (get-in @db [:form-data :registration :errors]))))
 
 ;; Session Authentication
 ;; ===========================================================

@@ -1,16 +1,25 @@
 (ns elixir-cljs.ui.views.index
   (:require
     [re-frame.core :refer [dispatch subscribe]]
-    [elixir-cljs.ui.views.register :refer [registration-view]])
-  (:require-macros [reagent.ratom :refer [reaction]]))
+    [elixir-cljs.ui.views.registration.index :refer [registration-view]]
+    [elixir-cljs.ui.views.admin.index :refer [admin-view]]))
+
+(defn root-view []
+  [:div "You are at ROOT"
+   [:hr]
+   [:button {:on-click #(dispatch [:nav/goto :registration])} "Register"]
+   [:button {:on-click #(dispatch [:nav/goto :admin])} "Admin"]]
+  )
 
 (defn index-view []
   (fn []
-    (let [auth (subscribe [:session-auth])
-          user (reaction (:user @auth))]
-      (if @auth
-        [:div
-         [:h3 "INDEX"]
-         [:div [:strong "Username: "] (str (:username @user))]
-         [:div [:strong "Name: "] (str (:name @user))]]
-        [registration-view]))))
+    (let [nav (subscribe [:nav/get-nav])]
+      [:div
+       [:h4 (str "NAV: " (keyword @nav))]
+       (if-not (= @nav :root)
+         [:button {:on-click #(dispatch [:nav/goto :root])} "Home"])
+       (case @nav
+         :root [root-view]
+         :admin [admin-view]
+         :registration [registration-view]
+         (dispatch [:nav/goto :root]))])))

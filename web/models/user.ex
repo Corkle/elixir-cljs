@@ -17,7 +17,18 @@ defmodule ElixirCljs.User do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, ~w(username name password), ~w(encrypted_password))
-    |> validate_length(:password, min: 5)
+    |> validate_length(:username, min: 3)
+    |> validate_length(:password, min: 6, message: "Password must be at least 6 characters.")
     |> validate_confirmation(:password, message: "Password does not match")
+    |> generate_encrypted_password
+  end
+  
+  defp generate_encrypted_password(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
+        put_change(changeset, :encrypted_password, Comeonin.Bcrypt.hashpwsalt(password))
+      _ ->
+        changeset
+    end
   end
 end

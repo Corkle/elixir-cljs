@@ -1,21 +1,33 @@
 # TODO
 
-## In Progress
+## Features
 
 - [ ] `api/v1/registrations`
-  - [ ] Erypt password
+  - [x] Encrypt password
   - [ ] Login Sessions
-  - [ ] Save JWT to local storage
-  - [ ] Error handling
+  - [x] Save JWT to local storage
+  - [x] Error handling
 - [ ] RethinkDB Queries
   - [x] `insert`
   - [ ] `update`
   - [ ] `delete`
   - [ ] `get`
   - [ ] `get_by`
+- [ ] Admin Page
+  - [ ] Users list
 
 ## Bugs
 
 
 ## Log
- - 
+
+### Currently Working On
+ 
+ 
+ 
+### Completed
+ - Save auth token to LocalStorage
+ - Encrypt password
+ - Show error flash messages on register
+ - DB insert errors now conform to structure of Changeset errors
+ - Added SPA navigation with Reagent

@@ -74,7 +74,7 @@ defmodule ElixirCljs.Query do
       |> catch_errors
       
     case result do
-      {:error, error} -> {:error, %{changeset | errors: [{:insert, error}], valid?: false}}
+      {:error, error} -> {:error, %{changeset | errors: [transform_error({:insert, error})], valid?: false}}
       %{"inserted" => 1, "changes" => changes} ->
         new_val = List.first(changes)["new_val"]
         model = load_model(schema, new_val)
@@ -152,6 +152,13 @@ defmodule ElixirCljs.Query do
 
   def handle_delete_response({:error, error}), do: {:error, error}
   def handle_delete_response(%{"deleted" => number, "skipped" => 0}), do: {:ok, number}
+
+  defp transform_error({field, message} = error) do
+    cond do
+      String.match?(message, ~r/Duplicate primary key `username`:/) -> {:username, "Username already in use."}
+      true -> error
+    end
+  end
 
   defp struct_from_changeset!(%{model: struct}),
     do: struct

@@ -2,15 +2,25 @@
   (:require
     [ajax.core :refer [GET POST]]
     [cognitect.transit :as t]
-    [re-frame.core :refer [register-handler dispatch]]))
+    [re-frame.core :refer [register-handler dispatch]]
+    [elixir-cljs.utility.localstorage :as ls]))
 
 (register-handler
   :init-db
   (fn [db _]
     {:ws nil
+     :nav :root
      :form-data {}
-     :username-value ""
      :config {}}))
+
+;; Navigation
+;; ===========================================================
+
+(register-handler
+  :nav/goto
+  (fn [db [_ page]]
+    (assoc-in db [:nav] page)))
+
 
 ;; Registration Form
 ;; ===========================================================
@@ -27,6 +37,7 @@
   :ajax/registration-response-handler
   (fn [db [_ res]]
     (js/console.log res)
+    (ls/set-item! "phoenixAuthToken" (:jwt res))
     (assoc-in db [:authentication] res)))
 
 (defn- registration-response-handler
@@ -35,10 +46,8 @@
 
 (register-handler
   :ajax/registration-response-error-handler
-  (fn [db [_ {:keys [status status-text response] :as res}]]
-    (js/console.log (str "error: " status " " status-text))
-    (js/console.log (str (:error response)))
-    db))
+  (fn [db [_ {:keys [response]}]]
+    (assoc-in db [:form-data :registration :errors] (:errors response))))
 
 (defn- registration-response-error-handler
   [res]
@@ -96,3 +105,8 @@
              :response-format :json
              :keywords? true})
       (update-in db [:form-data] dissoc :registration))))
+
+(register-handler
+  :session/logoff
+  (fn [db _]
+    (dissoc db :authentication)))
