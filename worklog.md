@@ -2,11 +2,12 @@
 
 ## Features
 
-- [ ] `api/v1/registrations`
-  - [x] Encrypt password
-  - [ ] Login Sessions
+- [ ] Authenticated Sessions
+  - [x] Create Session
+  - [ ] Delete Session
   - [x] Save JWT to local storage
-  - [x] Error handling
+  - [ ] Get current user by JWT
+  - [ ] Unauthenticated redirection
 - [ ] RethinkDB Queries
   - [x] `insert`
   - [ ] `update`
@@ -21,12 +22,12 @@
 ## Log
 
 ### Currently Working On
- 
+ - FE/Authenticated session container - when JWT is present, but not current user data, fetch current_user. Redirect to login if JWT not present.
  
 ### Completed
  - User login page and api
- - Save auth token to LocalStorage
- - Encrypt password
- - Show error flash messages on register
- - DB insert errors now conform to structure of Changeset errors
- - Added SPA navigation with Reagent
+ - FE/Save auth token to LocalStorage
+ - BE/Encrypt password
+ - FE/Show error flash messages on register
+ - BE/DB insert errors now conform to structure of Changeset errors
+ - FE/Added SPA navigation with Reagent

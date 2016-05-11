@@ -24,38 +24,6 @@ defmodule ElixirCljs.Query do
     end
   end
 
-  def get(table, id) when is_bitstring(id) do
-    Query.table(table)
-    |> Query.get(id)
-    |> DB.run
-    |> catch_errors
-    |> handle_get_response
-  end
-
-  def get(table, index, value) do
-    Query.table(table)
-    |> Query.get_all([value], %{index: index})
-    |> DB.run
-    |> catch_errors
-    |> handle_get_response
-  end
-
-  def get_many(table, index, value) do
-    Query.table(table)
-    |> Query.get_all([value], %{index: index})
-    |> DB.run
-    |> catch_errors
-    |> handle_get_many_response
-  end
-
-  def get_many(table, params) when is_map(params)do
-    Query.table(table)
-    |> Query.filter(params)
-    |> DB.run
-    |> catch_errors
-    |> handle_get_many_response
-  end
-
   def insert(changeset = %Ecto.Changeset{}) do
     case changeset.errors do
       [] ->
@@ -98,23 +66,7 @@ defmodule ElixirCljs.Query do
     end
   end
 
-  def update(table, id, params) do
-    Query.table(table)
-    |> Query.get(id)
-    |> Query.update(params)
-    |> DB.run
-    |> catch_errors
-    |> handle_update_response
-  end
 
-  def delete(table, id) do
-    Query.table(table)
-    |> Query.get(id)
-    |> Query.delete
-    |> DB.run
-    |> catch_errors
-    |> handle_delete_response
-  end
 
   def catch_errors(%RethinkDB.Exception.ConnectionClosed{}) do
     raise "Cannot connect to RethinkDB"
@@ -136,37 +88,6 @@ defmodule ElixirCljs.Query do
         data
     end
   end
-
-  def handle_get_response({:error, error}), do: {:error, error}
-  def handle_get_response([]), do: {:error, "Not found"}
-  def handle_get_response([item]), do: {:ok, item}
-  def handle_get_response(data) when is_map(data), do: {:ok, data}
-
-  def handle_get_many_response({:error, error}), do: {:error, error}
-  def handle_get_many_response(data) when is_list(data), do: data
-
-  def handle_insert_response({:error, error}), do: {:error, error}
-  def handle_insert_response(%{
-    "errors" => 0,
-    "inserted" => number,
-    "changes" => changes,
-    #"generated_keys" => _keys,
-    #"deleted" => _deleted,
-    #"replaced" => _replaced,
-    #"skipped" => _skipped,
-    #"unchanged" => _unchanged
-  }) when number >= 1 do
-    case number do
-      1 -> {:ok, List.first(changes)["new_val"]}
-      number -> {:ok, number}
-    end
-  end
-
-  def handle_update_response({:error, error}), do: {:error, error}
-  def handle_update_response(%{"replaced" => number, "skipped" => 0}), do: {:ok, number}
-
-  def handle_delete_response({:error, error}), do: {:error, error}
-  def handle_delete_response(%{"deleted" => number, "skipped" => 0}), do: {:ok, number}
 
   defp transform_error({field, message}) do
     cond do
@@ -199,4 +120,85 @@ defmodule ElixirCljs.Query do
     
     struct(model, changes) 
   end
+  
+#  def get(table, id) when is_bitstring(id) do
+#    Query.table(table)
+#    |> Query.get(id)
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_get_response
+#  end
+
+#  def get(table, index, value) do
+#    Query.table(table)
+#    |> Query.get_all([value], %{index: index})
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_get_response
+#  end
+
+#  def get_many(table, index, value) do
+#    Query.table(table)
+#    |> Query.get_all([value], %{index: index})
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_get_many_response
+#  end
+
+#  def get_many(table, params) when is_map(params)do
+#    Query.table(table)
+#    |> Query.filter(params)
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_get_many_response
+#  end
+
+#  def update(table, id, params) do
+#    Query.table(table)
+#    |> Query.get(id)
+#    |> Query.update(params)
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_update_response
+#  end
+
+#  def delete(table, id) do
+#    Query.table(table)
+#    |> Query.get(id)
+#    |> Query.delete
+#    |> DB.run
+#    |> catch_errors
+#    |> handle_delete_response
+#  end
+
+#  def handle_update_response({:error, error}), do: {:error, error}
+#  def handle_update_response(%{"replaced" => number, "skipped" => 0}), do: {:ok, number}
+
+#  def handle_delete_response({:error, error}), do: {:error, error}
+#  def handle_delete_response(%{"deleted" => number, "skipped" => 0}), do: {:ok, number}
+
+#  def handle_get_response({:error, error}), do: {:error, error}
+#  def handle_get_response([]), do: {:error, "Not found"}
+#  def handle_get_response([item]), do: {:ok, item}
+#  def handle_get_response(data) when is_map(data), do: {:ok, data}
+
+#  def handle_get_many_response({:error, error}), do: {:error, error}
+#  def handle_get_many_response(data) when is_list(data), do: data
+
+#  def handle_insert_response({:error, error}), do: {:error, error}
+#  def handle_insert_response(%{
+#    "errors" => 0,
+#    "inserted" => number,
+#    "changes" => changes,
+#    #"generated_keys" => _keys,
+#    #"deleted" => _deleted,
+#    #"replaced" => _replaced,
+#    #"skipped" => _skipped,
+#    #"unchanged" => _unchanged
+#  }) when number >= 1 do
+#    case number do
+#      1 -> {:ok, List.first(changes)["new_val"]}
+#      number -> {:ok, number}
+#    end
+#  end
 end

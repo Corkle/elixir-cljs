@@ -4,6 +4,7 @@ defmodule ElixirCljs.Session do
   def authenticate(%{"username" => username, "password" => password}) do
     case Query.get(User, username) do
       {:ok, user} ->
+        IO.inspect(user)
         case check_password(user, password) do
           true -> {:ok, user}
           _ -> :error
