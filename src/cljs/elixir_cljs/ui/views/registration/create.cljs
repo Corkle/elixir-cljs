@@ -6,7 +6,7 @@
 (defn- test-add-user []
   [:button {:on-click #(dispatch [:add-test-user])} "Add Test"])
 
-(defn registration-new []
+(defn registration-create []
   (fn []
     (dispatch [:init-registration-form])
     [:div "REGISTER"

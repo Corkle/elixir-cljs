@@ -1,12 +1,14 @@
 defmodule ElixirCljs.Session do
   alias ElixirCljs.{Query, User}
   
-  def authenticate(%{"username" => username, "pasword" => password}) do
-    user = Query.get("users", username)
-    
-    case check_password(user, password) do
-      true -> {:ok, user}
-      _ -> :error
+  def authenticate(%{"username" => username, "password" => password}) do
+    case Query.get(User, username) do
+      {:ok, user} ->
+        case check_password(user, password) do
+          true -> {:ok, user}
+          _ -> :error
+        end
+      {:error, _} -> :error
     end
   end
   

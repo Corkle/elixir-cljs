@@ -8,14 +8,14 @@
       [:input.form-control {:type "text"
                             :value @name
                             :required true
-                            :on-change #(dispatch [:set-name-input (-> % .-target .-value)])}])))
+                            :on-change #(dispatch [:registration/set-name-input (-> % .-target .-value)])}])))
 (defn- username-input []
   (let [username (subscribe [:registration/username-input])]
     (fn []
       [:input.form-control {:type "text"
                             :value @username
                             :required true
-                            :on-change #(dispatch [:set-username-input (-> % .-target .-value)])}])))
+                            :on-change #(dispatch [:registration/set-username-input (-> % .-target .-value)])}])))
 
 (defn- password-input []
   (let [password (subscribe [:registration/password-input])]
@@ -23,7 +23,7 @@
       [:input.form-control {:type "password"
                             :value @password
                             :required true
-                            :on-change #(dispatch [:set-password-input (-> % .-target .-value)])}])))
+                            :on-change #(dispatch [:registration/set-password-input (-> % .-target .-value)])}])))
 
 (defn- password-conf-input []
   (let [password-conf (subscribe [:registration/password-conf-input])]
@@ -31,7 +31,7 @@
       [:input.form-control {:type "password"
                             :value @password-conf
                             :required true
-                            :on-change #(dispatch [:set-password-conf-input (-> % .-target .-value)])}])))
+                            :on-change #(dispatch [:registration/set-password-conf-input (-> % .-target .-value)])}])))
 
 (defn- input-group-item
   [label control]
@@ -54,7 +54,7 @@
     (fn []
       [:form {:on-submit (fn [e]
                            (.preventDefault e)
-                           (dispatch [:ajax/create-account]))}
+                           (dispatch [:ajax/create-user]))}
        [show-errors]
        [input-group-item "Name" name-input]
        [input-group-item "Username" username-input]

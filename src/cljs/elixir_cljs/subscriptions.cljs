@@ -45,3 +45,13 @@
   :session-auth
   (fn [db _]
     (reaction (get-in @db [:authentication]))))
+
+(register-sub
+  :session/username-input
+  (fn [db _]
+    (reaction (get-in @db [:form-data :session :username]))))
+
+(register-sub
+  :session/password-input
+  (fn [db _]
+    (reaction (get-in @db [:form-data :session :password]))))

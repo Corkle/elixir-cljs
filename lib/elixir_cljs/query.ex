@@ -9,6 +9,21 @@ defmodule ElixirCljs.Query do
     |> catch_errors
   end
 
+  def get(schema, id) when is_bitstring(id) do
+    table = model_table(schema)  
+    result = Query.table(table)
+      |> Query.get(id)
+      |> DB.run
+      |> catch_errors
+      
+    case result do
+      {:error, error} -> {:error, error}
+      _ ->
+        model = load_model(schema, result)
+        {:ok, model}      
+    end
+  end
+
   def get(table, id) when is_bitstring(id) do
     Query.table(table)
     |> Query.get(id)

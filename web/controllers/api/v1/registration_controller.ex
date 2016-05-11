@@ -7,9 +7,7 @@ defmodule ElixirCljs.RegistrationController do
 
   def create(conn, %{"user" => user_params}) do
     changeset = User.changeset(%User{}, user_params)
-    
-    IO.inspect(changeset)
-    
+
     case Query.insert(changeset) do
       {:ok, %{model: user}} ->
         {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)

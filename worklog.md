@@ -11,8 +11,7 @@
   - [x] `insert`
   - [ ] `update`
   - [ ] `delete`
-  - [ ] `get`
-  - [ ] `get_by`
+  - [x] `get`
 - [ ] Admin Page
   - [ ] Users list
 
@@ -22,10 +21,10 @@
 ## Log
 
 ### Currently Working On
- - User login page and api
  
  
 ### Completed
+ - User login page and api
  - Save auth token to LocalStorage
  - Encrypt password
  - Show error flash messages on register
