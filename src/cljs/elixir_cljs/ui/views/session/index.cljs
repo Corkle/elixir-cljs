@@ -5,8 +5,8 @@
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (defn session-view []
-  (let [auth (subscribe [:session-auth])
-        user (reaction (:user @auth))]
+  (let [auth (subscribe [:session/authentication])
+        user (reaction (:current-user @auth))]
     (fn []
       (if @auth
         [:div

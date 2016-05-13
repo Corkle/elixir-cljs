@@ -42,9 +42,14 @@
 ;; ===========================================================
 
 (register-sub
-  :session-auth
+  :session/authentication
   (fn [db _]
     (reaction (get-in @db [:authentication]))))
+
+(register-sub
+  :session/current-user
+  (fn [db _]
+    (reaction (get-in @db [:authentication :current-user]))))
 
 (register-sub
   :session/username-input
@@ -55,3 +60,8 @@
   :session/password-input
   (fn [db _]
     (reaction (get-in @db [:form-data :session :password]))))
+
+(register-sub
+  :session/form-errors
+  (fn [db _]
+    (reaction (get-in @db [:form-data :session :errors]))))

@@ -5,7 +5,7 @@
   (:require-macros [reagent.ratom :refer [reaction]]))
 
 (defn registration-view []
-  (let [auth (subscribe [:session-auth])
+  (let [auth (subscribe [:session/authentication])
         user (reaction (:user @auth))]
     (fn []
       (if @auth

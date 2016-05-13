@@ -1,28 +1,34 @@
 (ns elixir-cljs.ui.views.index
   (:require
     [re-frame.core :refer [dispatch subscribe]]
+    [elixir-cljs.ui.containers.authenticated :refer [authenticated-container]]
+    [elixir-cljs.ui.components.top-navbar :refer [top-navbar]]
     [elixir-cljs.ui.views.registration.index :refer [registration-view]]
     [elixir-cljs.ui.views.session.index :refer [session-view]]
     [elixir-cljs.ui.views.admin.index :refer [admin-view]]))
 
 (defn root-view []
-  [:div "You are at ROOT"
-   [:hr]
-   [:button {:on-click #(dispatch [:nav/goto :session])} "Sign in"]
+  [:div
+   [:h2 "Welcome to the App!"]
+   [:button {:on-click #(dispatch [:nav/goto :login])} "Login"]
    [:button {:on-click #(dispatch [:nav/goto :registration])} "Register"]
+   [:button {:on-click #(dispatch [:nav/goto :content])} "Protected"]
    [:button {:on-click #(dispatch [:nav/goto :admin])} "Admin"]]
   )
 
 (defn index-view []
-  (fn []
-    (let [nav (subscribe [:nav/get-nav])]
+  (let [nav (subscribe [:nav/get-nav])]
+    (fn []
       [:div
-       [:h4 (str "NAV: " (keyword @nav))]
+       [top-navbar]
        (if-not (= @nav :root)
-         [:button {:on-click #(dispatch [:nav/goto :root])} "Home"])
+         [:span
+          [:button {:on-click #(dispatch [:nav/goto :root])} "Home"]
+          [:hr]])
        (case @nav
          :root [root-view]
          :admin [admin-view]
+         :login [session-view]
          :registration [registration-view]
-         :session [session-view]
+         :content [authenticated-container [:div "You can see my private data! I hope you are authorized!"]]
          (dispatch [:nav/goto :root]))])))

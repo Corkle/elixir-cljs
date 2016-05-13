@@ -35,11 +35,10 @@
 
 (register-handler
   :ajax/registration-response-handler
-  (fn [db [_ res]]
+  (fn [db [_ {:keys [jwt user] :as res}]]
     (js/console.log res)
-    (ls/set-item! "phoenixAuthToken" (:jwt res))
-    (dispatch [:nav/goto :root])
-    (assoc-in db [:authentication] res)))
+    (ls/set-item! "phoenixAuthToken" jwt)
+    (assoc-in db [:authentication] {:jwt jwt :current-user user})))
 
 (defn- registration-response-handler
   [res]
@@ -55,27 +54,27 @@
   (dispatch [:ajax/registration-response-error-handler res]))
 
 (register-handler
-  :registration/set-name-input
+  :set-name-input
   (fn [db [_ name]]
     (assoc-in db [:form-data :registration :name] name)))
 
 (register-handler
-  :registration/set-username-input
+  :set-username-input
   (fn [db [_ username]]
     (assoc-in db [:form-data :registration :username] username)))
 
 (register-handler
-  :registration/set-password-input
+  :set-password-input
   (fn [db [_ password]]
     (assoc-in db [:form-data :registration :password] password)))
 
 (register-handler
-  :registration/set-password-conf-input
+  :set-password-conf-input
   (fn [db [_ password-conf]]
     (assoc-in db [:form-data :registration :password-conf] password-conf)))
 
 (register-handler
-  :ajax/create-user
+  :ajax/create-account
   (fn [db _]
     (let [user-form (get-in db [:form-data :registration])
           user {:username (:username user-form)
@@ -107,6 +106,7 @@
              :keywords? true})
       (update-in db [:form-data] dissoc :registration))))
 
+
 ;; Session Form
 ;; ===========================================================
 
@@ -127,8 +127,8 @@
 (register-handler
   :ajax/session-response-error-handler
   (fn [db [_ {:keys [response]}]]
-    (js/console.log (:error response))
-    (assoc-in db [:form-data :session :error] (:error response))
+    (js/console.log response)
+    (assoc-in db [:form-data :session :errors] {:authentication [(:error response)]})
     ))
 
 (defn- session-response-error-handler

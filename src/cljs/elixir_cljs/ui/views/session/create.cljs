@@ -24,12 +24,23 @@
    [:span.input-group-addon label]
    [control]])
 
+(defn- show-errors []
+  (let [errors (subscribe [:session/form-errors])]
+    (fn []
+      (if-not (empty? @errors)
+        [:div.alert.alert-danger
+         [:p "Oops, something went wrong! Please check the errors below:"]
+         [:ul
+          (for [[field err-list] @errors]
+            ^{:key field} [:li (first err-list)])]]))))
+
 (defn- session-create-form []
   (let []
     (fn []
       [:form {:on-submit (fn [e]
                            (.preventDefault e)
                            (dispatch [:ajax/create-session]))}
+       [show-errors]
        [input-group-item "Username" username-input]
        [input-group-item "Password" password-input]
        [:hr]
