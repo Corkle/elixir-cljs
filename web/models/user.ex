@@ -17,7 +17,7 @@ defmodule ElixirCljs.User do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, ~w(username name password), ~w(encrypted_password))
-    |> validate_length(:username, min: 3)
+    |> validate_length(:username, min: 3, message: "Username must be at least 3 characters.")
     |> validate_length(:password, min: 6, message: "Password must be at least 6 characters.")
     |> validate_confirmation(:password, message: "Password does not match")
     |> generate_encrypted_password

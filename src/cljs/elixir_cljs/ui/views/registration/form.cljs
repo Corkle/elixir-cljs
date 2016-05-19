@@ -42,6 +42,7 @@
 (defn- show-errors []
   (let [errors (subscribe [:registration/form-errors])]
     (fn []
+      (js/console.log @errors)
       (if-not (empty? @errors)
         [:div.alert.alert-danger
          [:p "Oops, something went wrong! Please check the errors below:"]
@@ -54,7 +55,7 @@
     (fn []
       [:form {:on-submit (fn [e]
                            (.preventDefault e)
-                           (dispatch [:ajax/create-user]))}
+                           (dispatch [:ajax/create-account]))}
        [show-errors]
        [input-group-item "Name" name-input]
        [input-group-item "Username" username-input]

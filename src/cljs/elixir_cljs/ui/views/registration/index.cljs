@@ -6,12 +6,14 @@
 
 (defn registration-view []
   (let [auth (subscribe [:session/authentication])
-        user (reaction (:user @auth))]
+        user (reaction (:current-user @auth))]
     (fn []
       (if @auth
-        [:div
-         [:h4 "You are currently logged in as:"]
-         [:div [:strong "Username: "] (str (:username @user))]
-         [:div [:strong "Name: "] (str (:name @user))]
-         [:button {:on-click #(dispatch [:session/logoff])} "Create New"]]
+        (if (:registering? @auth)
+          [:div "Creating an account for you. Please wait..."]
+          [:div
+           [:h4 "You are currently logged in as:"]
+           [:div [:strong "Username: "] (str (:username @user))]
+           [:div [:strong "Name: "] (str (:name @user))]
+           [:button {:on-click #(dispatch [:session/logoff])} "Create New"]])
         [registration-create]))))

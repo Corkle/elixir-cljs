@@ -10,7 +10,7 @@
 (defn root-view []
   [:div
    [:h2 "Welcome to the App!"]
-   [:button {:on-click #(dispatch [:nav/goto :login])} "Login"]
+   [:button {:on-click #(dispatch [:nav/goto :login])} "Sign In"]
    [:button {:on-click #(dispatch [:nav/goto :registration])} "Register"]
    [:button {:on-click #(dispatch [:nav/goto :content])} "Protected"]
    [:button {:on-click #(dispatch [:nav/goto :admin])} "Admin"]]
@@ -30,5 +30,5 @@
          :admin [admin-view]
          :login [session-view]
          :registration [registration-view]
-         :content [authenticated-container [:div "You can see my private data! I hope you are authorized!"]]
+         :content [authenticated-container [:div "If you can see this, you are authenticated."]]
          (dispatch [:nav/goto :root]))])))

@@ -8,7 +8,6 @@
 
 (defn registration-create []
   (fn []
-    (dispatch [:init-registration-form])
     [:div "REGISTER"
      [add-user-form]
      [test-add-user]]))

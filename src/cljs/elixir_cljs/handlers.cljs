@@ -5,13 +5,17 @@
     [re-frame.core :refer [register-handler dispatch]]
     [elixir-cljs.utility.localstorage :as ls]))
 
+(def new-db {:ws nil
+             :nav :root
+             :form-data {}
+             :config {}})
+
 (register-handler
   :init-db
   (fn [db _]
-    {:ws nil
-     :nav :root
-     :form-data {}
-     :config {}}))
+    (if-let [jwt (ls/get-item "phoenixAuthToken")]
+      (assoc-in new-db [:authentication :jwt] jwt)
+      new-db)))
 
 ;; Navigation
 ;; ===========================================================
@@ -47,29 +51,32 @@
 (register-handler
   :ajax/registration-response-error-handler
   (fn [db [_ {:keys [response]}]]
-    (assoc-in db [:form-data :registration :errors] (:errors response))))
+    (js/console.log response)
+    (-> db
+        (assoc-in [:form-data :registration :errors] (:errors response))
+        (dissoc :authentication))))
 
 (defn- registration-response-error-handler
   [res]
   (dispatch [:ajax/registration-response-error-handler res]))
 
 (register-handler
-  :set-name-input
+  :registration/set-name-input
   (fn [db [_ name]]
     (assoc-in db [:form-data :registration :name] name)))
 
 (register-handler
-  :set-username-input
+  :registration/set-username-input
   (fn [db [_ username]]
     (assoc-in db [:form-data :registration :username] username)))
 
 (register-handler
-  :set-password-input
+  :registration/set-password-input
   (fn [db [_ password]]
     (assoc-in db [:form-data :registration :password] password)))
 
 (register-handler
-  :set-password-conf-input
+  :registration/set-password-conf-input
   (fn [db [_ password-conf]]
     (assoc-in db [:form-data :registration :password-conf] password-conf)))
 
@@ -88,7 +95,9 @@
              :format :json
              :response-format :json
              :keywords? true})
-      (update-in db [:form-data] dissoc :registration))))
+      (-> db
+          (update-in [:form-data] dissoc :registration)
+          (assoc-in [:authentication :registering?] true)))))
 
 (register-handler
   :add-test-user
@@ -107,7 +116,7 @@
       (update-in db [:form-data] dissoc :registration))))
 
 
-;; Session Form
+;; Session
 ;; ===========================================================
 
 (register-handler
@@ -120,16 +129,24 @@
   (fn [db [_ password]]
     (assoc-in db [:form-data :session :password] password)))
 
+(register-handler
+  :ajax/session-response-handler
+  (fn [db [_ {:keys [jwt user] :as res}]]
+    (js/console.log res)
+    (ls/set-item! "phoenixAuthToken" jwt)
+    (assoc-in db [:authentication] {:jwt jwt :current-user user})))
+
 (defn- session-response-handler
   [res]
-  (dispatch [:ajax/registration-response-handler res]))
+  (dispatch [:ajax/session-response-handler res]))
 
 (register-handler
   :ajax/session-response-error-handler
   (fn [db [_ {:keys [response]}]]
     (js/console.log response)
-    (assoc-in db [:form-data :session :errors] {:authentication [(:error response)]})
-    ))
+    (-> db
+        (assoc-in [:form-data :session :errors] {:authentication [(:error response)]})
+        (dissoc :authentication))))
 
 (defn- session-response-error-handler
   [res]
@@ -140,7 +157,7 @@
   (fn [db _]
     (let [session-form (get-in db [:form-data :session])
           session {:username (:username session-form)
-                :password (:password session-form)}]
+                   :password (:password session-form)}]
       (POST "/api/v1/sessions"
             {:params {:session session}
              :handler session-response-handler
@@ -148,9 +165,17 @@
              :format :json
              :response-format :json
              :keywords? true})
-      (update-in db [:form-data] dissoc :session))))
+      (-> db
+          (update-in [:form-data] dissoc :session)
+          (assoc-in [:authentication :authenticating?] true)))))
 
 (register-handler
   :session/logoff
   (fn [db _]
     (dissoc db :authentication)))
+
+(register-handler
+  :session/get-user-from-token
+  (fn [db _]
+    (let [jwt (get-in db [:authentication :jwt])]
+      (assoc-in db [:authentication :current-user :username] "token_user"))))

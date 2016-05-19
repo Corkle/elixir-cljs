@@ -8,7 +8,7 @@
       (if @current-user
         [:div.pull-right
          [:div "Signed In As: " [:strong (:username @current-user)]]
-         [:a {:role "button"} "Sign Out"]]
+         [:a {:role "button" :on-click #(dispatch [:session/logoff])} "Sign Out"]]
         [:div
          [:div "Not Signed In"]
          [:a {:role "button" :on-click #(dispatch [:nav/goto :login])} "Sign In"]]))))

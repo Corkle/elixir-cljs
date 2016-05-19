@@ -9,9 +9,11 @@
         user (reaction (:current-user @auth))]
     (fn []
       (if @auth
-        [:div
-         [:h4 "You are currently logged in as:"]
-         [:div [:strong "Username: "] (str (:username @user))]
-         [:div [:strong "Name: "] (str (:name @user))]
-         [:button {:on-click #(dispatch [:session/logoff])} "Logoff"]]
+        (if (:authenticating? @auth)
+          [:div "Signing you in. Please wait..."]
+          [:div
+           [:h4 "You are currently logged in as:"]
+           [:div [:strong "Username: "] (str (:username @user))]
+           [:div [:strong "Name: "] (str (:name @user))]
+           [:button {:on-click #(dispatch [:session/logoff])} "Logoff"]])
         [session-create]))))
