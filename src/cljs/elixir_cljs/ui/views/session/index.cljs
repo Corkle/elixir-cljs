@@ -8,12 +8,12 @@
   (let [auth (subscribe [:session/authentication])
         user (reaction (:current-user @auth))]
     (fn []
-      (if @auth
-        (if (:authenticating? @auth)
-          [:div "Signing you in. Please wait..."]
+      (if (:authenticating? @auth)
+        [:div "Signing you in. Please wait..."]
+        (if @user
           [:div
            [:h4 "You are currently logged in as:"]
            [:div [:strong "Username: "] (str (:username @user))]
            [:div [:strong "Name: "] (str (:name @user))]
-           [:button {:on-click #(dispatch [:session/logoff])} "Logoff"]])
-        [session-create]))))
+           [:button {:on-click #(dispatch [:session/logoff])} "Logoff"]]
+          [session-create])))))

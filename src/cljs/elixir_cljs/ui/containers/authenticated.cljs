@@ -8,23 +8,21 @@
   [:div "Getting your profile data..."])
 
 (defn- get-authorization
-  [auth]
-  (fn [{:keys [jwt]}]
-    (js/console.log jwt)
-    (if jwt
-      [get-current-user]
-      [:div
-       [:p "You are not authorized to view this content. Please sign in."]
-       [register-button]
-       [login-button]])))
+  [jwt]
+  (if jwt
+    [get-current-user]
+    [:div
+     [:p "You are not authorized to view this content. Please sign in."]
+     [register-button]
+     [login-button]]))
 
 (defn authenticated-container
   [component]
   (let [auth (subscribe [:session/authentication])
-        current-user (reaction (:current-user @auth))]
-    (fn []
+        user (reaction (:current-user @auth))]
+    (fn [component]
       [:div
        [:h4 "PROTECTED CONTENT"]
-       (if @current-user
-         [component]
-         [get-authorization @auth])])))
+       (if @user
+         component
+         [get-authorization (:jwt @auth)])])))

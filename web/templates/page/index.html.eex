@@ -1,1 +1,2 @@
 <div id="app">React Not Rendered</div>
+<div id="debug"></div>

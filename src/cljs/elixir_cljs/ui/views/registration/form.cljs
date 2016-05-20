@@ -42,7 +42,6 @@
 (defn- show-errors []
   (let [errors (subscribe [:registration/form-errors])]
     (fn []
-      (js/console.log @errors)
       (if-not (empty? @errors)
         [:div.alert.alert-danger
          [:p "Oops, something went wrong! Please check the errors below:"]

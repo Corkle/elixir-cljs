@@ -178,4 +178,5 @@
   :session/get-user-from-token
   (fn [db _]
     (let [jwt (get-in db [:authentication :jwt])]
-      (assoc-in db [:authentication :current-user :username] "token_user"))))
+      (assoc-in db [:authentication :current-user] {:username "token_user" :name "User"})
+      )))

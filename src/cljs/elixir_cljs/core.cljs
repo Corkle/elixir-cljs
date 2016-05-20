@@ -4,6 +4,7 @@
     [reagent.core :as r]
     [re-frame.core :refer [register-handler register-sub dispatch dispatch-sync subscribe]]
     ; [elixir-cljs.ws :refer [start-router!]]
+    [elixir-cljs.debug.debug-db]
     [elixir-cljs.handlers]
     [elixir-cljs.subscriptions]
     [elixir-cljs.ui.views.index :refer [index-view]])
