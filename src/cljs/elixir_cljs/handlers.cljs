@@ -172,11 +172,43 @@
 (register-handler
   :session/logoff
   (fn [db _]
+    (ls/remove-item! "phoenixAuthToken")
     (dissoc db :authentication)))
+
+(register-handler
+  :ajax/current-user-response-handler
+  (fn [db [_ response]]
+    (js/console.log response)
+    db))
+
+(defn- current-user-response-handler
+  [res]
+  (dispatch [:ajax/current-user-response-handler res]))
+
+(register-handler
+  :ajax/current-user-error-response-handler
+  (fn [db [_ {:keys [response]}]]
+    (js/console.log "ERROR")
+    (js/console.log response)
+    db))
+
+(defn- current-user-error-response-handler
+  [err-res]
+  (dispatch [:ajax/current-user-error-response-handler err-res]))
 
 (register-handler
   :session/get-user-from-token
   (fn [db _]
     (let [jwt (get-in db [:authentication :jwt])]
+      (GET "/api/v1/current_user"
+           {
+            :headers {"Content-Type" "applicaton/json"
+                      "Accept" "application/json"
+                      "Authorization" jwt
+                      }
+            :handler current-user-response-handler
+            :error-handler current-user-error-response-handler
+            :format :json
+            :keywords? true})
       (assoc-in db [:authentication :current-user] {:username "token_user" :name "User"})
       )))

@@ -14,12 +14,6 @@ defmodule ElixirCljs.Router do
     plug Guardian.Plug.VerifyHeader
     plug Guardian.Plug.LoadResource
   end
-
-  scope "/", ElixirCljs do
-    pipe_through :browser # Use the default browser stack
-
-    get "*path", PageController, :index
-  end
   
   scope "/api", ElixirCljs do
     pipe_through :api
@@ -30,6 +24,12 @@ defmodule ElixirCljs.Router do
       post "/sessions", SessionController, :create
       delete "/sessions", SessionController, :delete
     end
+  end
+  
+  scope "/", ElixirCljs do
+    pipe_through :browser # Use the default browser stack
+
+    get "*path", PageController, :index
   end
 
   # Other scopes may use custom stacks.

@@ -7,6 +7,6 @@ defmodule ElixirCljs.GuardianSerializer do
   #def for_token(user), do: IO.inspect(user)
   def for_token(_), do: { :error, "Unknown resource type" }
 
-  def from_token("User:" <> username), do: { :ok, Query.get("users", username) }
+  def from_token("User:" <> username), do: { :ok, Query.get(User, username) }
   def from_token(_), do: { :error, "Unknown resource type" }
 end
