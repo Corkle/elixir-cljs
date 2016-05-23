@@ -40,7 +40,6 @@
 (register-handler
   :ajax/registration-response-handler
   (fn [db [_ {:keys [jwt user] :as res}]]
-    (js/console.log res)
     (ls/set-item! "phoenixAuthToken" jwt)
     (assoc-in db [:authentication] {:jwt jwt :current-user user})))
 
@@ -132,7 +131,6 @@
 (register-handler
   :ajax/session-response-handler
   (fn [db [_ {:keys [jwt user] :as res}]]
-    (js/console.log res)
     (ls/set-item! "phoenixAuthToken" jwt)
     (assoc-in db [:authentication] {:jwt jwt :current-user user})))
 
