@@ -7,8 +7,6 @@ defmodule ElixirCljs.PageController do
   def index(conn, _params) do
 #    Query.table("users")
 #    |> IO.inspect
-    Query.get(User, "timber")
-    |> IO.inspect
   
     render conn, "index.html"
   end

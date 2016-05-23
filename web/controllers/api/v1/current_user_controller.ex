@@ -6,7 +6,6 @@ defmodule ElixirCljs.CurrentUserController do
   def show(conn, _) do
     case Guardian.Plug.current_resource(conn) do
       {:ok, user} ->
-        IO.inspect(user)
         
         conn
         |> put_status(:ok)

@@ -1,6 +1,6 @@
 (ns elixir-cljs.handlers
   (:require
-    [ajax.core :refer [GET POST]]
+    [ajax.core :refer [GET POST DELETE]]
     [cognitect.transit :as t]
     [re-frame.core :refer [register-handler dispatch]]
     [elixir-cljs.utility.localstorage :as ls]))
@@ -169,17 +169,46 @@
           (update-in [:form-data] dissoc :session)
           (assoc-in [:authentication :authenticating?] true)))))
 
+(defn- logoff-response-handler
+  [res]
+  (dispatch [:ajax/logoff-response-handler res]))
+
 (register-handler
-  :session/logoff
-  (fn [db _]
+  :ajax/logoff-response-handler
+  (fn [db [_ res]]
     (ls/remove-item! "phoenixAuthToken")
     (dissoc db :authentication)))
 
+(defn- logoff-error-response-handler
+  [res]
+  (dispatch [:ajax/logoff-error-response-handler res]))
+
 (register-handler
-  :ajax/current-user-response-handler
-  (fn [db [_ response]]
+  :ajax/logoff-error-response-handler
+  (fn [db [_ {:keys [response]}]]
     (js/console.log response)
     db))
+
+(register-handler
+  :session/logoff
+  (fn [db _]
+    (let [jwt (get-in db [:authentication :jwt])]
+      (DELETE "/api/v1/sessions"
+              {:headers {"Content-Type" "applicaton/json"
+                         "Accept" "application/json"
+                         "Authorization" jwt}
+               :handler logoff-response-handler
+               :error-handler logoff-error-response-handler
+               :response-format :json
+               :keywords? true})
+      db)))
+
+(register-handler
+  :ajax/current-user-response-handler
+  (fn [db [_ res]]
+    (let [user (:username res)
+          name (:name res)]
+      (assoc-in db [:authentication :current-user] {:username user :name name}))))
 
 (defn- current-user-response-handler
   [res]
@@ -188,7 +217,6 @@
 (register-handler
   :ajax/current-user-error-response-handler
   (fn [db [_ {:keys [response]}]]
-    (js/console.log "ERROR")
     (js/console.log response)
     db))
 
@@ -204,11 +232,10 @@
            {
             :headers {"Content-Type" "applicaton/json"
                       "Accept" "application/json"
-                      "Authorization" jwt
-                      }
+                      "Authorization" jwt}
             :handler current-user-response-handler
             :error-handler current-user-error-response-handler
             :format :json
+            :response-format :json
             :keywords? true})
-      (assoc-in db [:authentication :current-user] {:username "token_user" :name "User"})
-      )))
+      db)))
