@@ -132,6 +132,7 @@
   :ajax/session-response-handler
   (fn [db [_ {:keys [jwt user] :as res}]]
     (ls/set-item! "phoenixAuthToken" jwt)
+    (dispatch [:ws/join])
     (assoc-in db [:authentication] {:jwt jwt :current-user user})))
 
 (defn- session-response-handler
